@@ -1,0 +1,33 @@
+# Core LangChain ecosystem
+langchain>=1.0,<2.0
+langchain-core>=1.0,<2.0
+langgraph>=1.0,<2.0
+langsmith>=0.3.0
+
+# Deep Agents (bundles langgraph internally; listed for explicitness)
+deepagents
+
+# Model provider — Claude (Anthropic), Gemini (Google), or GPT-4o (OpenAI); swap as needed
+langchain-anthropic
+langchain-openai
+langchain-google-genai
+
+# Vector store — Chroma (local, no server required; see DECISIONS.md)
+langchain-chroma
+
+# Storage
+chromadb
+
+# Embeddings (local, no API key needed for dev; swap to langchain-openai embeddings in prod)
+sentence-transformers
+
+# Utilities
+python-dotenv
+pydantic>=2.0
+python-ulid      # for trace IDs with time-ordering
+tenacity         # retry logic for LLM calls
+editdistance     # for analyze_edit cost gating
+
+# Dev / test
+pytest
+pytest-asyncio
