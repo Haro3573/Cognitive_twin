@@ -2,6 +2,8 @@
 
 A pluggable **"Brain & Conscience" sub-agent** for Parent Agents. It predicts, aligns, and refines decisions based on a user's unique persona, values, and historical behaviors.
 
+
+WORK-IN-PROGRESS: PARSER FOR LLM EXTRACTION
 ---
 
 ## 🏛️ System Architecture
