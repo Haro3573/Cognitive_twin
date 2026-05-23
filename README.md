@@ -2,6 +2,8 @@
 
 A pluggable **"Brain & Conscience" sub-agent** for Parent Agents. It predicts, aligns, and refines decisions based on a user's unique persona, values, and historical behaviors.
 
+
+Note from Human: Currently working on parser and planned to update twin logic. the logic is yet fragile and has much ambiguity. Hope someone sees this and get inspired to become next Bill Gates Haha
 ---
 
 ## 🏛️ System Architecture
