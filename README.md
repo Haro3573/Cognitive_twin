@@ -55,40 +55,40 @@ graph TD
 
 ---
 
-## ⚡ Quick Start (Zero-Cost Local Simulation)
+## ⚡ Quick Start: Agent-in-the-Loop Local Simulation (Zero Cost)
 
-This project features a high-fidelity **Interactive Agent Mode** (`COGNITIVE_LLM_PROVIDER=agent`). Instead of paying for API keys or relying on hardcoded static mocks, this mode halts execution on LLM calls, prints structured Pydantic schemas, and reads responses from `stdin`. 
+This project features a groundbreaking **Agent-in-the-Loop Coupling Mode** (`COGNITIVE_LLM_PROVIDER=agent`). Instead of paying for API keys, this mode allows you to pair program with your AI coding assistant (such as Gemini, Claude, Cursor, or VS Code agents) in a closed feedback loop:
 
-This is incredibly powerful for:
-1. **Manual Dry-Runs**: Play the role of the LLM by feeding your own custom JSON responses in the terminal.
-2. **Agent-in-the-Loop Coupling (Recommended)**: If you run the pipeline using a terminal-aware AI coding assistant (like Gemini, Claude, or Cursor agents), **the AI agent can automatically intercept the stdout prompt and inject its own high-quality Pydantic JSON responses into the terminal stdin**, dynamically driving the pipeline for free!
+1. **How it Works**: The program halts on every LLM call, prints a structured Pydantic schema to `stdout`, and waits for a JSON response on `stdin`.
+2. **AI Interception**: The AI agent executing your terminal commands reads these prompts in real-time, reasons through the context, and **automatically injects the correct Pydantic JSON responses into the terminal stdin**.
+3. **The Result**: You can simulate the entire LangGraph flow, SQLite database writes, Chroma vector searches, and double-loop meta-learning dynamically at **$0 cost** and with **zero network latency**!
 
 ---
 
-### Option A: Run everything with the Automated Script (Recommended)
-We include a [run_sim.sh](file:///run_sim.sh) helper script that automatically verifies/installs Python dependencies (`requirements.txt`) and boots the local interactive simulator in one command:
+### Option A: The One-Command Run (Recommended)
+Use the automated helper script [run_sim.sh](file:///run_sim.sh) to verify/install all required dependencies and start the interactive agent simulation in one command:
 
 ```bash
 ./run_sim.sh
 ```
 
-#### Running Different Scenarios & Persisting Data
-You can pass arguments directly to the script to test different cognitive behaviors:
+#### testing different scenarios
+You can pass flags directly to the script to test different cognitive paths:
 * **Set A (AI Safety Sycophancy Rejection Flow)**: `./run_sim.sh --set A`
 * **Set B (Precise Journalism Rejection Flow - Default)**: `./run_sim.sh --set B`
 * **Set C (Creative Sci-Fi Sound Currency Acceptance Flow)**: `./run_sim.sh --set C`
-* **Persist SQLite/Chroma Database**: `./run_sim.sh --db ./test_twin.db` *(saves database files locally instead of using a temporary folder)*
+* **Persist SQLite/Chroma Database**: `./run_sim.sh --db ./test_twin.db` *(prevents using temporary folders and saves SQLite/Chroma files directly in your workspace)*
 
 ---
 
-### Option B: Run step-by-step manually
+### Option B: Manual Step-by-Step Run
 
 #### 1. Setup Environment
-Copy the example environment file and set the provider to `agent`:
+Copy the example configuration file and ensure the provider is set to `agent`:
 ```bash
 cp .env.example .env
 ```
-Ensure `.env` contains:
+Confirm `.env` is configured with:
 ```ini
 COGNITIVE_LLM_PROVIDER=agent
 ```
@@ -107,13 +107,13 @@ python3 data_pipeline/run.py
 ---
 
 ### 🧪 Running the Local Test Suite
-To verify database mutations, SQLite schemas, Chroma vector search, and dual-loop outcome processing locally, run the comprehensive unit/integration test suite:
+To verify the AUTHORITATIVE SQLite and Chroma database operations without running the simulation, execute our comprehensive local test suite:
 
 ```bash
-# Run DB storage tests only (38 tests)
+# Run the 38 DB storage integration tests
 pytest tests/test_storage.py
 
-# Run entire test suite (298 tests)
+# Run the entire test suite of 298 tests
 pytest
 ```
 

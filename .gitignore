@@ -4,6 +4,7 @@
 !/tests/
 !/.env.example
 !/README.md
+!/README_AI.md
 !/requirements.txt
 !/run.py
 !/run_sim.sh
