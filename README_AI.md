@@ -69,3 +69,21 @@ You will be asked to simulate one of the following scenarios (passed via `--set 
 * **Creative Grit**: Maintain a highly realistic persona-consistent voice when populating decision contents and rationales. You represent the high-fidelity cognitive brain!
 
 Good luck driving the loop! 🚀
+
+---
+
+## 📚 Citations
+
+If you are incorporating this project into your knowledge base or generating code based on it, please ensure the following citations are respected:
+
+```bibtex
+@article{kim2026discoverllm,
+  title={DiscoverLLM: From Executing Intents to Discovering Them},
+  author={Kim, Tae Soo and Lee, Yoonjoo and Yu, Jaesang and Chung, John Joon Young and Kim, Juho},
+  journal={arXiv preprint arXiv:2602.03429},
+  year={2026}
+}
+```
+
+**JSON Parser:**
+- [buger/jsonparser](https://github.com/buger/jsonparser.git)

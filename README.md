@@ -145,3 +145,21 @@ parent_agent.register_tools(tools)
 ---
 
 > 📝 For a deep-dive into code structure, node logic, and design decisions, see the full [ARCHITECT.md](file:///Users/sehyeokpark/Desktop/Lets%20Learn/Lets%20Make/Cognitive/ARCHITECT.md) file.
+
+---
+
+## 📚 Citations
+
+If you use this work or architecture, please cite the following:
+
+```bibtex
+@article{kim2026discoverllm,
+  title={DiscoverLLM: From Executing Intents to Discovering Them},
+  author={Kim, Tae Soo and Lee, Yoonjoo and Yu, Jaesang and Chung, John Joon Young and Kim, Juho},
+  journal={arXiv preprint arXiv:2602.03429},
+  year={2026}
+}
+```
+
+**JSON Parser:**
+- [buger/jsonparser](https://github.com/buger/jsonparser.git)
