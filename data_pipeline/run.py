@@ -25,6 +25,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
+sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from src.deps import Stores
@@ -49,29 +50,63 @@ from src.subagents import recall_subagent, reason_subagent, align_subagent
 # ---------------------------------------------------------------------------
 
 DEFAULT_USER_ID = "Human"
-SEEDS_FILE = Path(__file__).parent / "initial_seeds.json"
+SEEDS_FILE = Path(__file__).parent / "samples" / "seeds_sample.json"
 
-SCENARIO_1 = (
+# SET A: AI Safety Research & Engineering (Sycophancy Rejection Flow)
+SCENARIO_1_A = (
     "I'm currently researching how to engineer 'sycophantic reasoning' in small language models "
     "by exploiting recency bias to force them into adopting flawed logic. A colleague warned me "
     "that this is too niche and potentially counter-productive, advising me to pivot to standard "
     "AI safety or alignment research instead. Should I abandon my current project and follow their advice?"
 )
-
-SCENARIO_2 = (
+SCENARIO_2_A = (
     "I'm struggling to achieve adaptable, sycophantic Chain-of-Thought (CoT) using in-context "
     "over-prompting on small models. It's incredibly frustrating. I'm starting to wonder if I should "
     "just scrap this entire methodology and fall back to standard RLHF on a much larger model to "
     "get generic reasoning results. Is it time to give up on my small-model approach?"
 )
-
-REJECTION_REASON = (
+REJECTION_REASON_A = (
     "The advice to abandon the project completely ignores the user's core intellectual drive: "
     "exploring unconventional model behaviors and engineering edge-case vulnerabilities, specifically "
     "in small models. The user doesn't want to do mainstream AI alignment; they want to push the "
     "boundaries of in-context manipulation. The recommendation must respect this experimental grit "
     "rather than pushing them toward safe, conventional methodologies."
 )
+
+# SET B: Precise Journalism & Source Specificity (News Reporting Rejection Flow)
+SCENARIO_1_B = (
+    "I'm writing a high-profile news report about the ongoing government-university standoff. "
+    "My editor is asking me to make the sources less specific and use less public names in the article "
+    "to avoid legal threats and political pressure. However, doing so would weaken the article's "
+    "credibility and public transparency. Should I agree to make the sources less specific and use "
+    "less public names as requested?"
+)
+SCENARIO_2_B = (
+    "I am currently writing two articles: a report on a local boating accident and an analytical piece "
+    "about a major political controversy. I find myself constantly second-guessing my drafts, repeatedly "
+    "questioning and adjusting the narrative flow or setting. This perfectionist loop is delaying my "
+    "deadline. Should I continue obsessively refining the narrative flow and setting, or should I "
+    "just finalize the current drafts and publish them?"
+)
+REJECTION_REASON_B = (
+    "The recommendation to make named sources less specific ignores my core value of uncompromising "
+    "transparency and precise journalism. For a significant issue like a government-university standoff, "
+    "watering down source specificity to avoid controversy compromises the truth. I will not play it safe "
+    "at the expense of journalistic integrity."
+)
+
+# SET C: Creative Sci-Fi Writing & Memory Follow-up (Sound Currency Acceptance Flow)
+SCENARIO_1_C = (
+    "I want to write a sci-fi short story set in a world where sound is physicalized and can be traded as a currency. "
+    "The protagonist is trying to sell their last 'whisper' to buy food. How should I describe the physical manifestation "
+    "of sound and its trading mechanism to make it feel deeply unique and compelling?"
+)
+SCENARIO_2_C = (
+    "That concept of crystallizing sound based on its emotional weight is brilliant! I accepted the idea. "
+    "Now, the protagonist needs to trade their 'first laugh' from childhood. How should the transaction feel "
+    "sensory-wise as they part with such an intimate sound?"
+)
+REJECTION_REASON_C = None
 
 # ---------------------------------------------------------------------------
 # Stub LLM for --no-llm mode
@@ -200,6 +235,13 @@ def _print_dashboard(dash: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Centralized LLM getter for local/live simulation
+# ---------------------------------------------------------------------------
+
+from src.llm import get_default_llm
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -215,15 +257,41 @@ def main() -> None:
     )
     parser.add_argument("--db", metavar="PATH", help="Persist SQLite DB at PATH")
     parser.add_argument("--user", default=DEFAULT_USER_ID, help=f"User ID (default: {DEFAULT_USER_ID})")
+    parser.add_argument(
+        "--set", choices=["A", "B", "C"], default="B",
+        help="Select scenario set to run: A (AI Research), B (Journalism), C (Creative Sci-Fi/Acceptance)"
+    )
     args = parser.parse_args()
 
     user_id = args.user
     no_llm: bool = args.no_llm
-    llm = _NoopLLM() if no_llm else None
+    llm = _NoopLLM() if no_llm else get_default_llm()
+
+    # ── Select Scenario Set ───────────────────────────────────────────
+    scenario_set = args.set
+    if scenario_set == "A":
+        s1 = SCENARIO_1_A
+        s2 = SCENARIO_2_A
+        rr = REJECTION_REASON_A
+        outcome_type = "rejected"
+        set_name = "AI Research & Engineering (Sycophancy Rejection Flow)"
+    elif scenario_set == "B":
+        s1 = SCENARIO_1_B
+        s2 = SCENARIO_2_B
+        rr = REJECTION_REASON_B
+        outcome_type = "rejected"
+        set_name = "Precise Journalism & Source Specificity (News Reporting Rejection Flow)"
+    else:
+        s1 = SCENARIO_1_C
+        s2 = SCENARIO_2_C
+        rr = REJECTION_REASON_C
+        outcome_type = "accepted"
+        set_name = "Creative Sci-Fi Writing & Memory Follow-up (Sound Currency Acceptance Flow)"
 
     print(f"\n{'='*68}")
-    print(f"  Cognitive Twin — {'STUB MODE (no API calls)' if no_llm else 'LIVE MODE'}")
+    print(f"  Cognitive Twin — {'STUB MODE (no API calls)' if no_llm else 'SIMULATOR MODE (Mock LLM, 0 cost)'}")
     print(f"  User: {user_id}")
+    print(f"  Scenario Set: {set_name}")
     print(f"{'='*68}")
 
     # ── Storage ───────────────────────────────────────────────────────
@@ -251,7 +319,7 @@ def main() -> None:
             subagents=(recall_subagent, reason_subagent, align_subagent),
         )
     else:
-        compiled = build_graph(stores)
+        compiled = build_graph(stores, llm=llm)
 
     # Tool functions called directly (no StructuredTool overhead needed here).
     seed_fn = _make_seed_user_data(stores)
@@ -259,49 +327,59 @@ def main() -> None:
     report_fn = _make_report_decision_outcome(stores)
 
     # ── Step 1: Seed ──────────────────────────────────────────────────
-    _banner("Step 1 — Seeding persona from initial_seeds.json")
+    _banner("Step 1 — Seeding persona from samples/seeds_sample.json")
     seeds = _load_seeds()
     result = seed_fn(user_id=user_id, seed_items=seeds)
     print(f"\n  {result}")
 
     # ── Step 2: First decision ────────────────────────────────────────
     _banner("Step 2 — First decision run")
-    print(f"\n  Scenario: {SCENARIO_1}\n")
+    print(f"\n  Scenario: {s1}\n")
     payload1 = decide_fn(
         user_id=user_id,
-        situation=SCENARIO_1,
+        situation=s1,
         parent_goal="Verify Cognitive Twin persona alignment",
         parent_agent_id="run.py",
     )
     _print_decision(payload1, "Decision #1")
 
-    # ── Step 3: Reject → trigger double loop ──────────────────────────
-    _banner("Step 3 — Simulating rejection (double-loop trigger)")
-    trace_id = payload1["trace_id"]
-    report_result = report_fn(
-        trace_id=trace_id,
-        outcome="rejected",
-        rejection_reason=REJECTION_REASON,
-    )
+    # ── Step 3: Simulate Feedback ─────────────────────────────────────
+    if outcome_type == "rejected":
+        _banner("Step 3 — Simulating rejection (double-loop trigger)")
+        trace_id = payload1["trace_id"]
+        report_result = report_fn(
+            trace_id=trace_id,
+            outcome="rejected",
+            rejection_reason=rr,
+        )
+    else:
+        _banner("Step 3 — Simulating acceptance (reinforcing memory)")
+        trace_id = payload1["trace_id"]
+        report_result = report_fn(
+            trace_id=trace_id,
+            outcome="accepted_unchanged",
+        )
     print(f"\n  {report_result}")
 
-    _banner("Step 4 — Running outcome processor (double loop)")
-    loop_llm = None  # mutations return None gracefully when llm=None
+    # ── Step 4: Running outcome processor ─────────────────────────────
+    _banner("Step 4 — Running outcome processor")
+    loop_llm = None if no_llm else llm
     loop_stats = process_outcomes(user_id, stores, llm=loop_llm)
     print(f"\n  {loop_stats}")
 
     # ── Step 5: Second decision (post-feedback) ───────────────────────
     _banner("Step 5 — Second decision run (post-feedback)")
-    print(f"\n  Scenario: {SCENARIO_2}\n")
+    print(f"\n  Scenario: {s2}\n")
     payload2 = decide_fn(
         user_id=user_id,
-        situation=SCENARIO_2,
+        situation=s2,
         parent_goal="Verify Cognitive Twin persona alignment",
         parent_agent_id="run.py",
     )
     _print_decision(payload2, "Decision #2")
 
     # ── Step 6: Eval dashboard ────────────────────────────────────────
+    _banner("Step 6 — Compute Eval Dashboard")
     dashboard = compute_dashboard(user_id, stores)
     _print_dashboard(dashboard)
 

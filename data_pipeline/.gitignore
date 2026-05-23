@@ -1,0 +1,9 @@
+# Local data files containing potentially sensitive or large datasets
+*.json
+
+# Python artifacts
+__pycache__/
+*.pyc
+
+# OS generated files
+.DS_Store

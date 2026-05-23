@@ -55,25 +55,67 @@ graph TD
 
 ---
 
-## ⚡ Quick Start in 2 Steps
+## ⚡ Quick Start (Zero-Cost Local Simulation)
 
-The repository includes [run.py](file:///Users/sehyeokpark/Desktop/Lets%20Learn/Lets%20Make/Cognitive/run.py) to easily run mock scenarios and test the system locally.
+This project features a high-fidelity **Interactive Agent Mode** (`COGNITIVE_LLM_PROVIDER=agent`). Instead of paying for API keys or relying on hardcoded static mocks, this mode halts execution on LLM calls, prints structured Pydantic schemas, and reads responses from `stdin`. 
 
-### 1. Install Dependencies
+This is incredibly powerful for:
+1. **Manual Dry-Runs**: Play the role of the LLM by feeding your own custom JSON responses in the terminal.
+2. **Agent-in-the-Loop Coupling (Recommended)**: If you run the pipeline using a terminal-aware AI coding assistant (like Gemini, Claude, or Cursor agents), **the AI agent can automatically intercept the stdout prompt and inject its own high-quality Pydantic JSON responses into the terminal stdin**, dynamically driving the pipeline for free!
+
+---
+
+### Option A: Run everything with the Automated Script (Recommended)
+We include a [run_sim.sh](file:///run_sim.sh) helper script that automatically verifies/installs Python dependencies (`requirements.txt`) and boots the local interactive simulator in one command:
+
 ```bash
-pip install -r requirements.txt
+./run_sim.sh
 ```
 
-### 2. Run local verification smoke test (No API keys or network required)
+#### Running Different Scenarios & Persisting Data
+You can pass arguments directly to the script to test different cognitive behaviors:
+* **Set A (AI Safety Sycophancy Rejection Flow)**: `./run_sim.sh --set A`
+* **Set B (Precise Journalism Rejection Flow - Default)**: `./run_sim.sh --set B`
+* **Set C (Creative Sci-Fi Sound Currency Acceptance Flow)**: `./run_sim.sh --set C`
+* **Persist SQLite/Chroma Database**: `./run_sim.sh --db ./test_twin.db` *(saves database files locally instead of using a temporary folder)*
+
+---
+
+### Option B: Run step-by-step manually
+
+#### 1. Setup Environment
+Copy the example environment file and set the provider to `agent`:
 ```bash
-python run.py --no-llm
+cp .env.example .env
+```
+Ensure `.env` contains:
+```ini
+COGNITIVE_LLM_PROVIDER=agent
 ```
 
-> [!TIP]
-> To run in **Live Mode** using real LLM models, copy `.env.example` to `.env`, set your API keys, and run:
-> ```bash
-> python run.py
-> ```
+#### 2. Install Dependencies
+```bash
+pip3 install -r requirements.txt
+```
+
+#### 3. Run the Simulation
+```bash
+python3 data_pipeline/run.py
+```
+*(To run a fast smoke test that bypasses all subagent execution entirely, run `python3 data_pipeline/run.py --no-llm`)*
+
+---
+
+### 🧪 Running the Local Test Suite
+To verify database mutations, SQLite schemas, Chroma vector search, and dual-loop outcome processing locally, run the comprehensive unit/integration test suite:
+
+```bash
+# Run DB storage tests only (38 tests)
+pytest tests/test_storage.py
+
+# Run entire test suite (298 tests)
+pytest
+```
 
 ---
 

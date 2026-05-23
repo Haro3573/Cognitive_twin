@@ -5,7 +5,7 @@ Change the environment variables below to switch providers or models
 project-wide without touching any other source file.
 
 Environment variables (set in .env or shell):
-  COGNITIVE_LLM_PROVIDER      anthropic | openai | google   (default: anthropic)
+  COGNITIVE_LLM_PROVIDER      anthropic | openai | google | agent   (default: anthropic)
   COGNITIVE_LLM_MAIN_MODEL    model name for reasoning/critic
                               (default: claude-sonnet-4-6)
   COGNITIVE_LLM_FAST_MODEL    model name for quick helpers (context, honesty)
@@ -80,10 +80,14 @@ def get_default_llm(
             kwargs["max_output_tokens"] = max_tokens  # Google uses a different kwarg
         return ChatGoogleGenerativeAI(**kwargs)
 
+    elif provider == "agent":
+        from src.helpers.agent_llm import AgentLLM
+        return AgentLLM()
+
     else:
         raise ValueError(
             f"Unsupported COGNITIVE_LLM_PROVIDER={provider!r}. "
-            f"Valid options: anthropic, openai, google"
+            f"Valid options: anthropic, openai, google, agent"
         )
 
 

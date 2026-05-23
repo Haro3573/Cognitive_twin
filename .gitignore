@@ -6,8 +6,10 @@
 !/README.md
 !/requirements.txt
 !/run.py
+!/run_sim.sh
 !/ARCHITECT.md
 !/LICENSE
+!/data_pipeline/
 
 __pycache__/
 *.py[cod]
