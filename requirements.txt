@@ -32,5 +32,5 @@ editdistance     # for analyze_edit cost gating
 pytest
 pytest-asyncio
 
-# JSON parsing utility
-git+https://github.com/buger/jsonparser.git
+# JSON parsing utility./run_sim.sh
+# git+https://github.com/buger/jsonparser.git

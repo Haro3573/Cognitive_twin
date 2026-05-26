@@ -15,4 +15,5 @@ pip3 install -r requirements.txt
 echo -e "\n===================================================================="
 echo "  2. Running Cognitive Twin Local Simulation (Simulator Mode)"
 echo "===================================================================="
+export USE_ENV_EXAMPLE=1
 python3 data_pipeline/run.py "$@"

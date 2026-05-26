@@ -22,8 +22,13 @@ import tempfile
 from pathlib import Path
 
 # Load .env before any src imports so env vars are available to get_default_llm().
+import os
 from dotenv import load_dotenv
-load_dotenv()
+
+if os.environ.get("USE_ENV_EXAMPLE") == "1":
+    load_dotenv(".env.example")
+else:
+    load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent))
